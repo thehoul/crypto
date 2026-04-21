@@ -41,7 +41,6 @@ use ark_std::{io::Write, ops::Neg, rand::RngCore, vec::Vec};
 use dock_crypto_utils::{
     commitment::PedersenCommitmentKey, randomized_mult_checker::RandomizedMultChecker,
 };
-use kvac::bbs_sharp::ecdsa;
 
 const SECP_GEN: Affine = Affine::new_unchecked(G_GENERATOR_X, G_GENERATOR_Y);
 
@@ -87,24 +86,22 @@ pub struct PoKEcdsaSigCommittedPublicKey<const NUM_REPS_SCALAR_MULT: usize = 128
 
 impl TransformedEcdsaSig {
     pub fn new(
-        sig: &ecdsa::Signature,
+        (sig_x_coord, sig_response): (Fr, Fr),
         hashed_message: Fr,
         public_key: Affine,
     ) -> Result<Self, Error> {
-        let s_inv = sig
-            .response
+        let s_inv = sig_response
             .inverse()
             .ok_or(Error::EcdsaSigResponseNotInvertible)?;
-        let r_inv = sig
-            .rand_x_coord
+        let r_inv = sig_x_coord
             .inverse()
             .ok_or(Error::EcdsaSigResponseNotInvertible)?;
         let u1 = hashed_message * s_inv;
-        let u2 = sig.rand_x_coord * s_inv;
+        let u2 = sig_x_coord * s_inv;
         let R = (SECP_GEN * u1 + public_key * u2).into_affine();
         Ok(Self {
             R,
-            z: sig.response * r_inv,
+            z: sig_response * r_inv,
         })
     }
 
@@ -330,6 +327,7 @@ mod tests {
     use dock_crypto_utils::transcript::{new_merlin_transcript, Transcript};
     use rand_core::OsRng;
     use std::time::Instant;
+    use kvac::bbs_sharp::ecdsa;
     use test_utils::statistics::statistics;
 
     #[test]
@@ -342,7 +340,9 @@ mod tests {
         let sig = ecdsa::Signature::new_prehashed(&mut rng, message, sk);
         assert!(sig.verify_prehashed(message, pk));
 
-        let transformed_sig = TransformedEcdsaSig::new(&sig, message, pk).unwrap();
+        let transformed_sig = TransformedEcdsaSig::new(
+            (sig.rand_x_coord, sig.response), message, pk
+        ).unwrap();
         transformed_sig.verify_prehashed(message, pk).unwrap();
     }
 
@@ -363,7 +363,9 @@ mod tests {
         for i in 0..num_iters {
             let message = Fr::rand(&mut rng);
             let sig = ecdsa::Signature::new_prehashed(&mut rng, message, sk);
-            let transformed_sig = TransformedEcdsaSig::new(&sig, message, pk).unwrap();
+            let transformed_sig = TransformedEcdsaSig::new(
+                (sig.rand_x_coord, sig.response), message, pk
+            ).unwrap();
             transformed_sig.verify_prehashed(message, pk).unwrap();
 
             let comm_pk = PointCommitmentWithOpening::new(&mut rng, &pk, &comm_key_tom).unwrap();
@@ -513,7 +515,9 @@ mod tests {
             let sig = ecdsa::Signature::new_prehashed(&mut rng, message, sk);
 
             let start = Instant::now();
-            let transformed_sig = TransformedEcdsaSig::new(&sig, message, pk).unwrap();
+            let transformed_sig = TransformedEcdsaSig::new(
+                (sig.rand_x_coord, sig.response), message, pk
+            ).unwrap();
             transformed_sig.verify_prehashed(message, pk).unwrap();
 
             let mut prover_transcript = new_merlin_transcript(b"test");
