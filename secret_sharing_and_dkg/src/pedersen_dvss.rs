@@ -11,11 +11,12 @@
 
 #[cfg(test)]
 pub mod tests {
-    use crate::{
+    use ark_ec::AdditiveGroup;
+use crate::{
         common::{ParticipantId, ShareId, SharesAccumulator, VerifiableShare, VerifiableShares},
         pedersen_vss::deal_random_secret,
     };
-    use ark_ec::{AffineRepr, CurveGroup, Group};
+    use ark_ec::{AffineRepr, CurveGroup};
     use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
     use ark_std::rand::{rngs::StdRng, SeedableRng};
     use blake2::Blake2b512;

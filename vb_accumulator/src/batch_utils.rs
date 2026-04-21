@@ -737,7 +737,7 @@ where
 
     #[cfg(test)]
     /// Test function to check if generated correctly.
-    pub(crate) fn check_for_kb_positive_accumulator<D: Default + DynDigest + Clone>(
+    pub(crate) fn check_for_kb_positive_accumulator<D: Default + DynDigest + Clone + FixedOutputReset>(
         removals: &[G::ScalarField],
         element: &G::ScalarField,
         old_accumulator: &G,

@@ -23,12 +23,12 @@ pub fn reconstruct_threshold_public_key<G: AffineRepr>(
 
 #[cfg(test)]
 pub mod tests {
-    use super::*;
+    use ark_ec::AdditiveGroup;
+use super::*;
     use crate::{
         common::{ParticipantId, Share, Shares, SharesAccumulator},
         feldman_vss::deal_random_secret,
     };
-    use ark_ec::Group;
     use ark_ff::PrimeField;
     use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
     use ark_std::{

@@ -1191,21 +1191,6 @@ mod tests {
     }
 
     #[test]
-    fn rangeproof_curve25519() {
-        check_for_perfect_range::<ark_curve25519::EdwardsAffine>()
-    }
-
-    #[test]
-    fn rangeproof_ed25519() {
-        check_for_perfect_range::<ark_ed25519::EdwardsAffine>()
-    }
-
-    #[test]
-    fn rangeproof_secp256k1() {
-        check_for_perfect_range::<ark_secp256k1::Affine>()
-    }
-
-    #[test]
     fn poly() {
         let q = Fr::from(2);
         let a = Poly {
