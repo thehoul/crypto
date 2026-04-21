@@ -422,7 +422,7 @@ impl<G: AffineRepr> Prover<G> {
     ) {
         // compute r_i = (1/ (e + d_i))
         let mut r = cfg_iter!(self.r1_sec.as_ref().unwrap().d_vec)
-            .map(|x| (e + x))
+            .map(|x| e + x)
             .collect::<Vec<_>>();
         batch_inversion(&mut r);
 

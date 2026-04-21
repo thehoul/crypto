@@ -44,7 +44,7 @@ impl<Left, Right> OwnedPairs<Left, Right> {
     }
 
     /// Borrows `OwnedPairs` as `Pairs.`
-    pub fn as_ref(&self) -> Pairs<Left, Right> {
+    pub fn as_ref(&self) -> Pairs<'_, '_, Left, Right> {
         pairs!(&self.left, &self.right)
     }
 

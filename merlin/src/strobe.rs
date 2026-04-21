@@ -16,9 +16,8 @@ use core::ops::{Deref, DerefMut};
 use keccak;
 #[cfg(feature = "serde")]
 use serde::{
-    de::{Error, SeqAccess, Visitor},
     ser::SerializeTuple,
-    Deserialize, Deserializer, Serialize, Serializer,
+    Deserialize, Serialize,
 };
 use zeroize::Zeroize;
 

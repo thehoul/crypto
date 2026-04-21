@@ -141,7 +141,7 @@ impl<F: PrimeField> Proof<F> {
     pub fn verify<G: AffineRepr<ScalarField = F>, D: Digest>(
         &self,
         threshold: ShareId,
-        total: ShareId,
+        _total: ShareId,
         public_keys: Vec<G>,
         enc_shares: &[EncryptedShare<G>],
     ) -> Result<(), SSError> {
