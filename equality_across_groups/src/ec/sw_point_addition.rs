@@ -341,13 +341,14 @@ impl<P: SWPoint, C: SWPoint> PointAdditionProof<P, C> {
 mod tests {
     use super::*;
     use crate::tom256::{Affine as tomAff, Config as tomConfig};
-    use ark_ec::{CurveGroup, Group};
+    use ark_ec::{CurveGroup};
     use ark_secp256r1::{Affine as secpAff, Config as secpConfig};
     use ark_std::UniformRand;
     use blake2::Blake2b512;
     use dock_crypto_utils::transcript::{new_merlin_transcript, Transcript};
     use rand_core::OsRng;
     use std::time::Instant;
+    use ark_ff::AdditiveGroup;
     use test_utils::statistics::statistics;
 
     #[test]

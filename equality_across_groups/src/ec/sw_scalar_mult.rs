@@ -20,7 +20,7 @@ use crate::{
     error::Error,
 };
 use ark_ec::{short_weierstrass::Affine, AffineRepr, CurveGroup};
-use ark_ff::{Field, One, Zero};
+use ark_ff::{AdditiveGroup, Field, One, Zero};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{cfg_into_iter, cfg_iter, io::Write, ops::Neg, rand::RngCore, vec::Vec, UniformRand};
 use dock_crypto_utils::{

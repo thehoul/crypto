@@ -101,7 +101,7 @@ use crate::{
 use ark_ec::{
     pairing::{Pairing, PairingOutput},
     scalar_mul::wnaf::WnafContext,
-    AffineRepr, CurveGroup, Group,
+    AffineRepr, CurveGroup, PrimeGroup,
 };
 use ark_ff::{Field, PrimeField};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};

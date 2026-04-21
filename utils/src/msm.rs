@@ -1,5 +1,5 @@
-use ark_ec::{scalar_mul::fixed_base::FixedBase, CurveGroup};
-use ark_ff::PrimeField;
+use ark_ec::{scalar_mul::BatchMulPreprocessing, CurveGroup};
+use ark_ff::{BigInteger, PrimeField};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{fmt::Debug, ops::Mul, vec::Vec};
 
@@ -17,30 +17,41 @@ impl<G: CurveGroup> WindowTable<G> {
     /// need to be done and it can be an approximation as it does not impact correctness but only performance.
     pub fn new(num_multiplications: usize, group_elem: G) -> Self {
         let scalar_size = G::ScalarField::MODULUS_BIT_SIZE as usize;
-        let window_size = FixedBase::get_mul_window_size(num_multiplications);
-        // ceil(scalar_size/window_size)
-        let num_windows = (scalar_size + window_size - 1) / window_size;
-        let table = FixedBase::get_window_table(scalar_size, window_size, group_elem);
+        let precomp = BatchMulPreprocessing::new(group_elem, num_multiplications);
+        let num_windows = (scalar_size + precomp.window - 1) / precomp.window;
         Self {
             scalar_size,
-            window_size,
+            window_size: precomp.window,
             num_windows,
-            table,
+            table: precomp.table,
         }
     }
 
     /// Multiply with a single scalar
     pub fn multiply(&self, element: &G::ScalarField) -> G {
-        FixedBase::windowed_mul(self.num_windows, self.window_size, &self.table, element)
+        let mut res = G::from(self.table[0][0]);
+        let scalar_bits = element.into_bigint().to_bits_le();
+        for outer in 0..self.num_windows {
+            let mut inner = 0usize;
+            for i in 0..self.window_size {
+                if outer * self.window_size + i < self.scalar_size
+                    && scalar_bits[outer * self.window_size + i]
+                {
+                    inner |= 1 << i;
+                }
+            }
+            res += self.table[outer][inner];
+        }
+        res
     }
 
     /// Multiply with a many scalars
     pub fn multiply_many(&self, elements: &[G::ScalarField]) -> Vec<G> {
-        FixedBase::msm(self.scalar_size, self.window_size, &self.table, elements)
+        elements.iter().map(|e| self.multiply(e)).collect()
     }
 
     pub fn window_size(num_multiplications: usize) -> usize {
-        FixedBase::get_mul_window_size(num_multiplications)
+        BatchMulPreprocessing::<G>::compute_window_size(num_multiplications)
     }
 }
 

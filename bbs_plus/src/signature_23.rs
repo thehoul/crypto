@@ -4,7 +4,7 @@ use crate::{
     error::BBSPlusError,
     setup::{PreparedPublicKeyG2, PreparedSignatureParams23G1, SecretKey, SignatureParams23G1},
 };
-use ark_ec::{pairing::Pairing, AffineRepr, CurveGroup, Group};
+use ark_ec::{pairing::Pairing, AffineRepr, CurveGroup, PrimeGroup};
 use ark_ff::{fields::Field, PrimeField};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{

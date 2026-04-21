@@ -53,7 +53,7 @@ use ark_ff::PrimeField;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{cfg_iter, fmt::Debug, rand::RngCore, vec::Vec, UniformRand};
 use core::iter::once;
-use digest::{Digest, DynDigest};
+use digest::{Digest, DynDigest, FixedOutputReset};
 use dock_crypto_utils::{
     affine_group_element_from_byte_slices,
     aliases::*,
@@ -94,7 +94,7 @@ impl<F: PrimeField> SecretKey<F> {
     pub fn generate_using_seed<D>(seed: &[u8]) -> Self
     where
         F: PrimeField,
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
     {
         Self(hash_to_field::<F, D>(Self::DST, seed))
     }
@@ -344,7 +344,7 @@ macro_rules! impl_keypair_generation {
     ( $gen_using_seed_fn_name:ident, $gen_using_rng_fn_name:ident, $gen_using_sk_fn_name:ident, $pk: ident, $params:ident ) => {
         pub fn $gen_using_seed_fn_name<D>(seed: &[u8], params: &$params<E>) -> Self
         where
-            D: DynDigest + Default + Clone,
+            D: DynDigest + Default + Clone + FixedOutputReset,
         {
             let secret_key = SecretKey::<E::ScalarField>::generate_using_seed::<D>(seed);
             let public_key = $pk::$gen_using_sk_fn_name(&secret_key, params);

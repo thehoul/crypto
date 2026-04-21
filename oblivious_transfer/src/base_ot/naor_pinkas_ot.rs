@@ -2,8 +2,8 @@
 //! Protocol is described in section 3.1. Allows to run `m` instances of 1-of-n chosen message OTs.
 
 use crate::{configs::OTConfig, error::OTError, util::xor, Message};
-use ark_ec::{AffineRepr, CurveGroup, Group};
-use ark_ff::PrimeField;
+use ark_ec::{AffineRepr, CurveGroup, PrimeGroup};
+use ark_ff::{AdditiveGroup, PrimeField};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{cfg_into_iter, cfg_iter, log2, rand::RngCore, vec, vec::Vec, UniformRand};
 use digest::{ExtendableOutput, Update};

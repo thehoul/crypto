@@ -16,7 +16,7 @@ use crate::{
 use ark_ff::{BigInteger, PrimeField};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{cfg_into_iter, cfg_iter, rand::RngCore, vec, vec::Vec, UniformRand};
-use digest::{Digest, DynDigest, ExtendableOutput, Update};
+use digest::{Digest, DynDigest, ExtendableOutput, FixedOutputReset, Update};
 #[cfg(feature = "serde")]
 use dock_crypto_utils::serde_utils::ArkObjectBytes;
 use dock_crypto_utils::{
@@ -150,7 +150,10 @@ impl<F: PrimeField, const KAPPA: u16, const STATISTICAL_SECURITY_PARAMETER: u16>
         })
     }
 
-    pub fn receive<D: Default + DynDigest + Clone, X: Default + Update + ExtendableOutput>(
+    pub fn receive<
+        D: Default + DynDigest + Clone + FixedOutputReset,
+        X: Default + Update + ExtendableOutput,
+    >(
         self,
         U: BitMatrix,
         rlc: KOSRLC,
@@ -235,7 +238,7 @@ impl<F: PrimeField, const KAPPA: u16, const STATISTICAL_SECURITY_PARAMETER: u16>
         ))
     }
 
-    pub fn receive<D: Default + DynDigest + Clone>(
+    pub fn receive<D: Default + DynDigest + Clone + FixedOutputReset>(
         self,
         tau: CorrelationTag<F>,
         rlc: RLC<F>,

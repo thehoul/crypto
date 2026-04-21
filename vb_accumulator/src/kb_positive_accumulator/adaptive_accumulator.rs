@@ -11,7 +11,7 @@ use crate::{
 use ark_ec::{pairing::Pairing, AffineRepr};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{cfg_into_iter, cfg_iter, rand::RngCore, vec::Vec};
-use digest::DynDigest;
+use digest::{DynDigest, FixedOutputReset};
 #[cfg(feature = "serde")]
 use dock_crypto_utils::serde_utils::ArkObjectBytes;
 #[cfg(feature = "serde")]
@@ -46,7 +46,7 @@ impl<G: AffineRepr> KBPositiveAccumulator<G> {
     /// Whats actually added to the accumulator is the randomness used in the BB signature on the
     /// element
     pub fn add<
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
         E: Pairing<G1Affine = G, ScalarField = G::ScalarField>,
     >(
         &self,
@@ -68,7 +68,7 @@ impl<G: AffineRepr> KBPositiveAccumulator<G> {
 
     /// Removes an element from the accumulator. Returns the new value of the accumulator
     pub fn remove<
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
         E: Pairing<G1Affine = G, ScalarField = G::ScalarField>,
     >(
         &self,
@@ -83,7 +83,7 @@ impl<G: AffineRepr> KBPositiveAccumulator<G> {
 
     /// Add a batch of elements to the accumulator. Returns the membership witness of that batch
     pub fn add_batch<
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
         E: Pairing<G1Affine = G, ScalarField = G::ScalarField>,
     >(
         &self,
@@ -112,7 +112,7 @@ impl<G: AffineRepr> KBPositiveAccumulator<G> {
 
     /// Removes a batch of elements from the accumulator. Returns the new value of the accumulator
     pub fn remove_batch<
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
         E: Pairing<G1Affine = G, ScalarField = G::ScalarField>,
     >(
         &self,
@@ -129,7 +129,7 @@ impl<G: AffineRepr> KBPositiveAccumulator<G> {
 
     /// Add and removes batches of elements. Returns the new accumulator value and the membership witnesses of the added batch.
     pub fn batch_updates<
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
         E: Pairing<G1Affine = G, ScalarField = G::ScalarField>,
     >(
         &self,
@@ -163,7 +163,7 @@ impl<G: AffineRepr> KBPositiveAccumulator<G> {
 
     /// Get membership witness of an element
     pub fn get_witness<
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
         E: Pairing<G1Affine = G, ScalarField = G::ScalarField>,
     >(
         &self,
@@ -183,7 +183,7 @@ impl<G: AffineRepr> KBPositiveAccumulator<G> {
     }
 
     pub fn get_witnesses_for_batch<
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
         E: Pairing<G1Affine = G, ScalarField = G::ScalarField>,
     >(
         &self,
@@ -238,7 +238,7 @@ impl<G: AffineRepr> KBPositiveAccumulator<G> {
 
     /// The value corresponding to `element` that is added to the non-adaptive accumulator
     pub fn accumulator_member<
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
         E: Pairing<G1Affine = G, ScalarField = G::ScalarField>,
     >(
         element: &G::ScalarField,

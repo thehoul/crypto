@@ -9,7 +9,7 @@ use ark_std::{
     rand::RngCore,
     vec::Vec,
 };
-use digest::{Digest, DynDigest};
+use digest::{Digest, DynDigest, FixedOutputReset};
 use dock_crypto_utils::expect_equality;
 
 use crate::{
@@ -85,7 +85,7 @@ impl<F: PrimeField, const SALT_SIZE: usize> Phase1<F, SALT_SIZE> {
     }
 
     /// End phase 1 and return the output of this phase
-    pub fn finish_for_bbs<D: Default + DynDigest + Clone>(
+    pub fn finish_for_bbs<D: Default + DynDigest + Clone + FixedOutputReset>(
         self,
         signing_key: &F,
     ) -> Result<Phase1Output<F>, BBSPlusError> {

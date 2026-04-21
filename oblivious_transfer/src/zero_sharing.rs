@@ -17,7 +17,7 @@ use ark_std::{
     vec,
     vec::Vec,
 };
-use digest::{Digest, DynDigest};
+use digest::{Digest, DynDigest, FixedOutputReset};
 
 #[derive(Clone, Debug, PartialEq, CanonicalSerialize, CanonicalDeserialize)]
 pub struct Party<F: PrimeField, const SALT_SIZE: usize> {
@@ -91,7 +91,9 @@ impl<F: PrimeField, const SALT_SIZE: usize> Party<F, SALT_SIZE> {
     }
 
     /// Use the shares received from all parties to create `batch_size` sets of shares of 0
-    pub fn compute_zero_shares<D: Default + DynDigest + Clone>(self) -> Result<Vec<F>, OTError> {
+    pub fn compute_zero_shares<D: Default + DynDigest + Clone + FixedOutputReset>(
+        self,
+    ) -> Result<Vec<F>, OTError> {
         let mut randoness = BTreeMap::<ParticipantId, Vec<F>>::new();
         let mut shares = vec![F::zero(); self.batch_size as usize];
         for (id, protocol) in self.cointoss_protocols {
@@ -142,7 +144,7 @@ impl<F: PrimeField, const SALT_SIZE: usize> Party<F, SALT_SIZE> {
     }
 }
 
-pub fn hash_to_field<F: PrimeField, D: Default + DynDigest + Clone>(
+pub fn hash_to_field<F: PrimeField, D: Default + DynDigest + Clone + FixedOutputReset>(
     party_1: ParticipantId,
     party_2: ParticipantId,
     r: &F,
@@ -154,7 +156,7 @@ pub fn hash_to_field<F: PrimeField, D: Default + DynDigest + Clone>(
     bytes.push((party_1 >> 8) as u8);
     bytes.push((party_2 & 255) as u8);
     bytes.push((party_2 >> 8) as u8);
-    hasher.hash_to_field(&bytes, 1).pop().unwrap()
+    hasher.hash_to_field::<1>(&bytes)[0]
 }
 
 #[cfg(test)]

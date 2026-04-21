@@ -16,7 +16,7 @@ use ark_ff::{
 };
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{cfg_into_iter, rand::RngCore, vec, vec::Vec, UniformRand};
-use digest::{DynDigest, ExtendableOutput, Update};
+use digest::{DynDigest, ExtendableOutput, FixedOutputReset, Update};
 use dock_crypto_utils::join;
 #[cfg(feature = "serde")]
 use dock_crypto_utils::serde_utils::ArkObjectBytes;
@@ -193,7 +193,7 @@ impl OTExtensionReceiverSetup {
 
     /// Receiver takes the correlation tag and creates its correlated output
     /// Step 7 of Protocol 9 in paper Secure Two-party Threshold ECDSA
-    pub fn receive<F: PrimeField, D: Default + DynDigest + Clone>(
+    pub fn receive<F: PrimeField, D: Default + DynDigest + Clone + FixedOutputReset>(
         &self,
         tau: CorrelationTag<F>,
     ) -> Result<ReceiverOutput<F>, OTError> {
@@ -327,7 +327,7 @@ impl OTExtensionSenderSetup {
 
     /// Sender takes the correlation and transfers the correlated output and correlation tag.
     /// Step 6 of Protocol 9 in paper Secure Two-party Threshold ECDSA
-    pub fn transfer<F: PrimeField, D: Default + DynDigest + Clone>(
+    pub fn transfer<F: PrimeField, D: Default + DynDigest + Clone + FixedOutputReset>(
         &self,
         alpha: Vec<(F, F)>,
     ) -> Result<(SenderOutput<F>, CorrelationTag<F>), OTError> {
@@ -389,17 +389,15 @@ fn gen_randomness<D: Default + Update + ExtendableOutput>(
     randomness
 }
 
-pub fn hash_to_field<F: PrimeField, D: Default + DynDigest + Clone>(
+pub fn hash_to_field<F: PrimeField, D: Default + DynDigest + Clone + FixedOutputReset>(
     index: u32,
     q: &[u8],
     hasher: &DefaultFieldHasher<D>,
 ) -> (F, F) {
     let mut seed = index.to_be_bytes().to_vec();
     seed.extend_from_slice(q);
-    let mut out = hasher.hash_to_field(&seed, 2);
-    let out_0 = out.pop().unwrap();
-    let out_1 = out.pop().unwrap();
-    (out_0, out_1)
+    let out = hasher.hash_to_field::<2>(&seed);
+    (out[0], out[1])
 }
 
 #[cfg(test)]

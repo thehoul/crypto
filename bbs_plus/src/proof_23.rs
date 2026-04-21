@@ -25,7 +25,7 @@ use crate::{
     setup::{PreparedPublicKeyG2, PreparedSignatureParams23G1, SignatureParams23G1},
     signature_23::Signature23G1,
 };
-use ark_ec::{pairing::Pairing, AffineRepr, CurveGroup, Group, VariableBaseMSM};
+use ark_ec::{pairing::Pairing, AffineRepr, CurveGroup, PrimeGroup, VariableBaseMSM};
 use ark_ff::{PrimeField, Zero};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{

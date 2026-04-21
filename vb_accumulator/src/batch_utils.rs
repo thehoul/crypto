@@ -19,7 +19,7 @@ use ark_std::{
     vec,
     vec::Vec,
 };
-use digest::DynDigest;
+use digest::{DynDigest, FixedOutputReset};
 #[cfg(feature = "serde")]
 use dock_crypto_utils::serde_utils::*;
 use dock_crypto_utils::{
@@ -511,7 +511,7 @@ where
     /// Create `Omega` for KB positive accumulator after `removals` are removed from `old_accumulator`.
     /// Returns `c_0 * -V, c_1 * -V, ..., c_n * -V` where `V` is the accumulator before the update and `c_i` are the coefficients of
     /// the polynomial `v_D`. As this accumulator does not change on additions, only polynomial `v_D` is generated.
-    pub fn new_for_kb_positive_accumulator<D: Default + DynDigest + Clone>(
+    pub fn new_for_kb_positive_accumulator<D: Default + DynDigest + Clone + FixedOutputReset>(
         removals: &[G::ScalarField],
         old_accumulator: &G,
         sk: &crate::kb_positive_accumulator::setup::SecretKey<G::ScalarField>,

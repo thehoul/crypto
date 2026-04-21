@@ -11,7 +11,7 @@ use ark_ff::{
 };
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{ops::Neg, rand::RngCore, vec, vec::Vec, UniformRand};
-use digest::DynDigest;
+use digest::{DynDigest, FixedOutputReset};
 #[cfg(feature = "serde")]
 use dock_crypto_utils::serde_utils::ArkObjectBytes;
 #[cfg(feature = "serde")]
@@ -104,7 +104,7 @@ impl<E: Pairing> SignatureG1<E> {
 
     /// Create a new deterministic signature. The randomness in the signature comes from a PRF applied on the message
     /// and the secret key.
-    pub fn new_deterministic<D: Default + DynDigest + Clone>(
+    pub fn new_deterministic<D: Default + DynDigest + Clone + FixedOutputReset>(
         message: &E::ScalarField,
         sk: &SecretKey<E::ScalarField>,
         params: &SignatureParams<E>,
@@ -172,7 +172,7 @@ impl<E: Pairing> SignatureG1<E> {
     }
 
     /// Generate randomness to be used in the signature for a given message
-    pub fn generate_random_for_message<D: Default + DynDigest + Clone>(
+    pub fn generate_random_for_message<D: Default + DynDigest + Clone + FixedOutputReset>(
         message: &E::ScalarField,
         secret_key: &SecretKey<E::ScalarField>,
     ) -> E::ScalarField {
@@ -182,7 +182,7 @@ impl<E: Pairing> SignatureG1<E> {
 
 /// A PRF (PseudoRandom Function) with key as the signing key. The PRF is computed as `H(sk||message)` where `H` is hash
 /// function that outputs a finite field element
-pub fn prf<F: PrimeField, D: Default + DynDigest + Clone>(
+pub fn prf<F: PrimeField, D: Default + DynDigest + Clone + FixedOutputReset>(
     message: &F,
     secret_key: &SecretKey<F>,
 ) -> F {
@@ -192,7 +192,7 @@ pub fn prf<F: PrimeField, D: Default + DynDigest + Clone>(
     secret_key.0.serialize_compressed(&mut bytes).unwrap();
     secret_key.1.serialize_compressed(&mut bytes).unwrap();
     message.serialize_compressed(&mut bytes).unwrap();
-    let r = hasher.hash_to_field(&bytes, 1).pop().unwrap();
+    let r = hasher.hash_to_field::<1>(&bytes)[0];
     bytes.zeroize();
     r
 }

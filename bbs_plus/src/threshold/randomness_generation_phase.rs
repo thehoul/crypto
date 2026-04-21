@@ -3,7 +3,7 @@ use crate::{error::BBSPlusError, threshold::utils::compute_masked_arguments_to_m
 use ark_ff::PrimeField;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::vec::Vec;
-use digest::{Digest, DynDigest};
+use digest::{Digest, DynDigest, FixedOutputReset};
 use oblivious_transfer_protocols::{cointoss, zero_sharing};
 
 /// This is the first phase of the signing protocol where parties generate random values, jointly and
@@ -68,7 +68,9 @@ impl<F: PrimeField, const SALT_SIZE: usize> Phase1<F, SALT_SIZE> {
     }
 
     /// Computes joint randomness and masked arguments to multiply
-    pub fn compute_randomness_and_arguments_for_multiplication<D: Default + DynDigest + Clone>(
+    pub fn compute_randomness_and_arguments_for_multiplication<
+        D: Default + DynDigest + Clone + FixedOutputReset,
+    >(
         self,
         signing_key: &F,
     ) -> Result<(Vec<ParticipantId>, Vec<F>, Vec<F>, Vec<F>), BBSPlusError> {

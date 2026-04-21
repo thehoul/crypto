@@ -39,7 +39,7 @@ use ark_std::{
     vec::Vec,
 };
 use core::fmt::Debug;
-use digest::{Digest, DynDigest, ExtendableOutput, Update};
+use digest::{Digest, DynDigest, ExtendableOutput, FixedOutputReset, Update};
 pub use oblivious_transfer_protocols::{
     cointoss::Commitments,
     error::OTError,
@@ -126,7 +126,7 @@ impl<F: PrimeField, const SALT_SIZE: usize> Phase1<F, SALT_SIZE> {
         ))
     }
 
-    pub fn finish<D: Default + DynDigest + Clone>(
+    pub fn finish<D: Default + DynDigest + Clone + FixedOutputReset>(
         self,
     ) -> Result<Phase1Output<F>, ShortGroupSigError> {
         // TODO: Ensure every one has participated in both protocols
@@ -251,7 +251,7 @@ impl<F: PrimeField, const KAPPA: u16, const STATISTICAL_SECURITY_PARAMETER: u16>
 
     /// Process received `Message1` from signer with id `sender_id`
     pub fn receive_message1<
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
         X: Default + Update + ExtendableOutput,
     >(
         &mut self,
@@ -265,7 +265,7 @@ impl<F: PrimeField, const KAPPA: u16, const STATISTICAL_SECURITY_PARAMETER: u16>
     }
 
     /// Process received `Message2` from signer with id `sender_id`
-    pub fn receive_message2<D: Default + DynDigest + Clone>(
+    pub fn receive_message2<D: Default + DynDigest + Clone + FixedOutputReset>(
         &mut self,
         sender_id: ParticipantId,
         message: Message2<F>,

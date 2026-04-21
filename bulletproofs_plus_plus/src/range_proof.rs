@@ -11,7 +11,7 @@ use crate::{
     weighted_norm_linear_argument::WeightedNormLinearArgument,
 };
 use ark_ec::AffineRepr;
-use ark_ff::{batch_inversion, Field, PrimeField, Zero};
+use ark_ff::{batch_inversion, AdditiveGroup, Field, PrimeField, Zero};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{
     cfg_into_iter, cfg_iter, cfg_iter_mut, format, ops::Neg, rand::RngCore, vec, vec::Vec,

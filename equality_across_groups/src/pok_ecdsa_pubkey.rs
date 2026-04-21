@@ -498,8 +498,8 @@ mod tests {
         let comm_pk = PointCommitmentWithOpening::new(&mut rng, &pk, &comm_key_tom).unwrap();
 
         // Commit to ECDSA public key on BLS12-381 curve
-        let pk_x = from_base_field_to_scalar_field::<Fq, BlsFr>(pk.x().unwrap());
-        let pk_y = from_base_field_to_scalar_field::<Fq, BlsFr>(pk.y().unwrap());
+        let pk_x = from_base_field_to_scalar_field::<Fq, BlsFr>(&pk.x().unwrap());
+        let pk_y = from_base_field_to_scalar_field::<Fq, BlsFr>(&pk.y().unwrap());
         let bls_comm_pk_rx = BlsFr::rand(&mut rng);
         let bls_comm_pk_ry = BlsFr::rand(&mut rng);
         let bls_comm_pk_x = comm_key_bls.commit(&pk_x, &bls_comm_pk_rx);

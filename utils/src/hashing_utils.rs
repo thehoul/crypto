@@ -11,7 +11,7 @@ use ark_ff::{
     Field,
 };
 use ark_std::vec::Vec;
-use digest::Digest;
+use digest::{Digest, FixedOutputReset};
 
 #[cfg(feature = "parallel")]
 use rayon::prelude::*;
@@ -52,15 +52,15 @@ pub fn field_elem_from_try_and_incr<F: Field, D: Digest>(bytes: &[u8]) -> F {
 
 /// Hash given bytes `seed` to a field element using constant time operations where `dst` is the domain
 /// separation tag.
-pub fn hash_to_field<F: Field, D: FullDigest>(dst: &[u8], seed: &[u8]) -> F {
+pub fn hash_to_field<F: Field, D: FullDigest + FixedOutputReset>(dst: &[u8], seed: &[u8]) -> F {
     let hasher = <DefaultFieldHasher<D> as HashToField<F>>::new(dst);
-    hasher.hash_to_field(seed, 1).pop().unwrap()
+    hasher.hash_to_field::<1>(seed)[0]
 }
 
 /// Hash given bytes `seed` to `count` number of field element using constant time operations where `dst` is the domain
 /// separation tag. It's different from `HashToField::hash_to_field` in that the first `n` elements of
 /// `hash_to_field_many(n)` and `hash_to_field_many(n + x)` for any `x` >= 0 are the same.
-pub fn hash_to_field_many<F: Field, D: FullDigest + SyncIfParallel>(
+pub fn hash_to_field_many<F: Field, D: FullDigest + SyncIfParallel + FixedOutputReset>(
     dst: &[u8],
     seed: &[u8],
     count: u32,
@@ -68,6 +68,6 @@ pub fn hash_to_field_many<F: Field, D: FullDigest + SyncIfParallel>(
     let hasher = <DefaultFieldHasher<D> as HashToField<F>>::new(dst);
     le_bytes_iter(count)
         .map(|ctr| concat_slices!(seed, ctr))
-        .map(|seed| hasher.hash_to_field(&seed, 1).pop().unwrap())
+        .map(|seed| hasher.hash_to_field::<1>(&seed)[0])
         .collect()
 }

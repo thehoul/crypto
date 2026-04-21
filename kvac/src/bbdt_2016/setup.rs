@@ -3,7 +3,7 @@ use ark_ff::PrimeField;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{cfg_iter, rand::RngCore, vec::Vec};
 use core::iter::once;
-use digest::{Digest, DynDigest};
+use digest::{Digest, DynDigest, FixedOutputReset};
 #[cfg(feature = "serde")]
 use dock_crypto_utils::serde_utils::ArkObjectBytes;
 use dock_crypto_utils::{
@@ -153,7 +153,9 @@ impl<F: PrimeField> SecretKey<F> {
         Self(F::rand(rng))
     }
 
-    pub fn generate_using_seed<D: DynDigest + Default + Clone>(seed: &[u8]) -> Self {
+    pub fn generate_using_seed<D: DynDigest + Default + Clone + FixedOutputReset>(
+        seed: &[u8],
+    ) -> Self {
         Self(hash_to_field::<F, D>(Self::DST, seed))
     }
 }

@@ -11,6 +11,7 @@ use ark_ec::{AffineRepr, CurveGroup};
 use ark_ff::PrimeField;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{cfg_iter, ops::Neg, rand::RngCore, vec::Vec, UniformRand};
+use digest::FixedOutputReset;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "serde")]
@@ -128,7 +129,7 @@ pub struct HashedElgamalCiphertext<G: AffineRepr> {
 impl<G: AffineRepr> HashedElgamalCiphertext<G> {
     /// Returns the ciphertext and randomness created for encryption
     /// `g` is the generator used in the scheme to generate public key and ephemeral public key by sender/encryptor
-    pub fn new<R: RngCore, D: FullDigest>(
+    pub fn new<R: RngCore, D: FullDigest + FixedOutputReset>(
         rng: &mut R,
         msg: &G::ScalarField,
         public_key: &G,
@@ -143,7 +144,7 @@ impl<G: AffineRepr> HashedElgamalCiphertext<G> {
 
     /// Returns the ciphertext
     /// `g` is the generator used in the scheme to generate public key and ephemeral public key by sender/encryptor
-    pub fn new_given_randomness<D: FullDigest>(
+    pub fn new_given_randomness<D: FullDigest + FixedOutputReset>(
         msg: &G::ScalarField,
         randomness: &G::ScalarField,
         public_key: &G,
@@ -160,7 +161,7 @@ impl<G: AffineRepr> HashedElgamalCiphertext<G> {
     /// Returns the ciphertext but takes the window tables for the public key and generator. Useful when a lot
     /// of encryptions have to be done using the same public key
     /// `g` is the generator used in the scheme to generate public key and ephemeral public key by sender/encryptor
-    pub fn new_given_randomness_and_window_tables<D: FullDigest>(
+    pub fn new_given_randomness_and_window_tables<D: FullDigest + FixedOutputReset>(
         msg: &G::ScalarField,
         randomness: &G::ScalarField,
         public_key: &WindowTable<G::Group>,
@@ -173,13 +174,13 @@ impl<G: AffineRepr> HashedElgamalCiphertext<G> {
         }
     }
 
-    pub fn decrypt<D: FullDigest>(&self, secret_key: &G::ScalarField) -> G::ScalarField {
+    pub fn decrypt<D: FullDigest + FixedOutputReset>(&self, secret_key: &G::ScalarField) -> G::ScalarField {
         let shared_secret = self.eph_pk.mul(secret_key).into_affine();
         self.encrypted - Self::otp::<D>(shared_secret)
     }
 
     /// Return a OTP (One Time Pad) by hashing the shared secret.
-    pub fn otp<D: FullDigest>(shared_secret: G) -> G::ScalarField {
+    pub fn otp<D: FullDigest + FixedOutputReset>(shared_secret: G) -> G::ScalarField {
         let mut bytes = Vec::with_capacity(shared_secret.compressed_size());
         shared_secret.serialize_uncompressed(&mut bytes).unwrap();
         hash_to_field::<G::ScalarField, D>(b"", &bytes)
@@ -207,7 +208,7 @@ pub struct BatchedHashedElgamalCiphertext<G: AffineRepr> {
 impl<G: AffineRepr> BatchedHashedElgamalCiphertext<G> {
     /// Returns the ciphertext and randomness created for encryption
     /// `g` is the generator used in the scheme to generate public key and ephemeral public key by sender/encryptor
-    pub fn new<R: RngCore, D: FullDigest>(
+    pub fn new<R: RngCore, D: FullDigest + FixedOutputReset>(
         rng: &mut R,
         msgs: &[G::ScalarField],
         public_key: &G,
@@ -222,7 +223,7 @@ impl<G: AffineRepr> BatchedHashedElgamalCiphertext<G> {
 
     /// Returns the ciphertext
     /// `g` is the generator used in the scheme to generate public key and ephemeral public key by sender/encryptor
-    pub fn new_given_randomness<D: FullDigest>(
+    pub fn new_given_randomness<D: FullDigest + FixedOutputReset>(
         msgs: &[G::ScalarField],
         randomness: &G::ScalarField,
         public_key: &G,
@@ -239,7 +240,7 @@ impl<G: AffineRepr> BatchedHashedElgamalCiphertext<G> {
     /// Returns the ciphertext but takes the window tables for the public key and generator. Useful when a lot
     /// of encryptions have to be done using the same public key
     /// `g` is the generator used in the scheme to generate public key and ephemeral public key by sender/encryptor
-    pub fn new_given_randomness_and_window_tables<D: FullDigest>(
+    pub fn new_given_randomness_and_window_tables<D: FullDigest + FixedOutputReset>(
         msgs: &[G::ScalarField],
         randomness: &G::ScalarField,
         public_key: &WindowTable<G::Group>,
@@ -252,7 +253,7 @@ impl<G: AffineRepr> BatchedHashedElgamalCiphertext<G> {
         }
     }
 
-    pub fn decrypt<D: FullDigest>(&self, secret_key: &G::ScalarField) -> Vec<G::ScalarField> {
+    pub fn decrypt<D: FullDigest + FixedOutputReset>(&self, secret_key: &G::ScalarField) -> Vec<G::ScalarField> {
         let shared_secret = self.eph_pk.mul(secret_key).into_affine();
         cfg_iter!(self.encrypted)
             .enumerate()
@@ -265,14 +266,14 @@ impl<G: AffineRepr> BatchedHashedElgamalCiphertext<G> {
     }
 
     /// Return a OTP (One Time Pad) by hashing the shared secret along with the message index.
-    pub fn otp<D: FullDigest>(shared_secret: &G, msg_idx: u32) -> G::ScalarField {
+    pub fn otp<D: FullDigest + FixedOutputReset>(shared_secret: &G, msg_idx: u32) -> G::ScalarField {
         let mut bytes = Vec::with_capacity(shared_secret.compressed_size());
         shared_secret.serialize_uncompressed(&mut bytes).unwrap();
         msg_idx.serialize_uncompressed(&mut bytes).unwrap();
         hash_to_field::<G::ScalarField, D>(b"", &bytes)
     }
 
-    fn enc_with_otp<D: FullDigest>(
+    fn enc_with_otp<D: FullDigest + FixedOutputReset>(
         msgs: &[G::ScalarField],
         shared_secret: &G,
     ) -> Vec<G::ScalarField> {

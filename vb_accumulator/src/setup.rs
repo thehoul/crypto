@@ -32,7 +32,7 @@ use ark_ec::{pairing::Pairing, AffineRepr, CurveGroup};
 use ark_ff::PrimeField;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use ark_std::{fmt::Debug, io::Write, rand::RngCore, vec::Vec, UniformRand};
-use digest::{Digest, DynDigest};
+use digest::{Digest, DynDigest, FixedOutputReset};
 #[cfg(feature = "serde")]
 use dock_crypto_utils::serde_utils::*;
 use dock_crypto_utils::{
@@ -99,7 +99,7 @@ impl<F: PrimeField> SecretKey<F> {
     pub fn generate_using_seed<D>(seed: &[u8]) -> Self
     where
         F: PrimeField,
-        D: DynDigest + Default + Clone,
+        D: DynDigest + Default + Clone + FixedOutputReset,
     {
         Self(hash_to_field::<F, D>(Self::DST, seed))
     }
@@ -148,7 +148,7 @@ impl<E: Pairing> Keypair<E> {
     /// Create a secret key and corresponding public key using seed
     pub fn generate_using_seed<D>(seed: &[u8], setup_params: &SetupParams<E>) -> Self
     where
-        D: DynDigest + Default + Clone,
+        D: DynDigest + Default + Clone + FixedOutputReset,
     {
         let secret_key = SecretKey::<E::ScalarField>::generate_using_seed::<D>(seed);
         let public_key = Self::public_key_from_secret_key(&secret_key, setup_params);

@@ -21,7 +21,7 @@ use ark_std::{
     rand::RngCore,
     vec::Vec,
 };
-use digest::{DynDigest, ExtendableOutput, Update};
+use digest::{DynDigest, ExtendableOutput, FixedOutputReset, Update};
 use dock_crypto_utils::transcript::MerlinTranscript;
 use itertools::interleave;
 
@@ -151,7 +151,7 @@ impl<F: PrimeField, const KAPPA: u16, const STATISTICAL_SECURITY_PARAMETER: u16>
 
     /// Process received message from Party2 of multiplication protocol
     pub fn receive_message1<
-        D: Default + DynDigest + Clone,
+        D: Default + DynDigest + Clone + FixedOutputReset,
         X: Default + Update + ExtendableOutput,
     >(
         &mut self,
@@ -186,7 +186,7 @@ impl<F: PrimeField, const KAPPA: u16, const STATISTICAL_SECURITY_PARAMETER: u16>
     }
 
     /// Process received message from Party1 of multiplication protocol
-    pub fn receive_message2<D: Default + DynDigest + Clone>(
+    pub fn receive_message2<D: Default + DynDigest + Clone + FixedOutputReset>(
         &mut self,
         sender_id: ParticipantId,
         message: Message2<F>,

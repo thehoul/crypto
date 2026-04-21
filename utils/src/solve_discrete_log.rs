@@ -1,11 +1,11 @@
 use alloc::string::ToString;
-use ark_ec::Group;
+use ark_ec::PrimeGroup;
 use ark_std::collections::BTreeMap;
 
 /// Solve discrete log using brute force.
 /// `max` is the maximum value of the discrete log and this returns `x` such that `1 <= x <= max` and `base * x = target`
 /// if such `x` exists, else return None.
-pub fn solve_discrete_log_brute_force<G: Group>(max: u64, base: G, target: G) -> Option<u64> {
+pub fn solve_discrete_log_brute_force<G: PrimeGroup>(max: u64, base: G, target: G) -> Option<u64> {
     if target == base {
         return Some(1);
     }
@@ -23,7 +23,7 @@ pub fn solve_discrete_log_brute_force<G: Group>(max: u64, base: G, target: G) ->
 /// `max` is the maximum value of the discrete log and this returns `x` such that `1 <= x <= max` and `base * x = target`
 /// if such `x` exists, else return None.
 /// `max` is of type u64 but only accurate till a 52 bit value since 12 bit precision is lost while taking square root.
-pub fn solve_discrete_log_bsgs<G: Group>(max: u64, base: G, target: G) -> Option<u64> {
+pub fn solve_discrete_log_bsgs<G: PrimeGroup>(max: u64, base: G, target: G) -> Option<u64> {
     // Will lose 12 bits of precision
     let m = (max as f64).sqrt().ceil() as u64;
     solve_discrete_log_bsgs_inner(m, m, base, target)
@@ -33,13 +33,13 @@ pub fn solve_discrete_log_bsgs<G: Group>(max: u64, base: G, target: G) -> Option
 /// `max` is the maximum value of the discrete log and this returns `x` such that `1 <= x <= max` and `base * x = target`
 /// if such `x` exists, else return None.
 /// `max` is of type u64 but only accurate till a 52 bit value since 12 bit precision is lost while taking square root.
-pub fn solve_discrete_log_bsgs_alt<G: Group>(max: u64, base: G, target: G) -> Option<u64> {
+pub fn solve_discrete_log_bsgs_alt<G: PrimeGroup>(max: u64, base: G, target: G) -> Option<u64> {
     // Will lose 12 bits of precision
     let m = (max as f64 / 2.0).sqrt().ceil() as u64;
     solve_discrete_log_bsgs_inner(m, 2 * m, base, target)
 }
 
-fn solve_discrete_log_bsgs_inner<G: Group>(
+fn solve_discrete_log_bsgs_inner<G: PrimeGroup>(
     num_baby_steps: u64,
     num_giant_steps: u64,
     base: G,
@@ -92,7 +92,7 @@ pub mod tests {
     fn solving_discrete_log() {
         let mut rng = StdRng::seed_from_u64(0u64);
 
-        fn check<G: Group + Mul<Fr, Output = G>>(
+        fn check<G: PrimeGroup + Mul<Fr, Output = G>>(
             rng: &mut StdRng,
             base: G,
             check_large_value: bool,

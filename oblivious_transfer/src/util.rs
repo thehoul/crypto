@@ -1,4 +1,4 @@
-use ark_ec::Group;
+use ark_ec::PrimeGroup;
 use ark_std::{cfg_into_iter, vec, vec::Vec};
 use core::ops::{BitAnd, Shl, Shr};
 
@@ -29,7 +29,7 @@ pub fn xor_in_place(a: &mut [u8], b: &[u8]) {
 }
 
 /// Returns `[g, 2*g, 3*g, ..., n*g]`
-pub fn multiples_of_g<G: Group>(g: G, n: usize) -> Vec<G> {
+pub fn multiples_of_g<G: PrimeGroup>(g: G, n: usize) -> Vec<G> {
     assert!(n > 0);
     let mut v = Vec::with_capacity(n);
     v.push(g);

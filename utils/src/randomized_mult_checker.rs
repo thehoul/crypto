@@ -107,7 +107,7 @@ impl<G: AffineRepr> RandomizedMultChecker<G> {
     fn add(&mut self, p: G, s: G::ScalarField) {
         if let Some(x) = p.x() {
             self.args
-                .entry(*x)
+                .entry(x)
                 .and_modify(|(old_scalar, point)| {
                     // If the point or its negative already exists, update the scalar accordingly
                     if *point == p {
