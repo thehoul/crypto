@@ -5,23 +5,13 @@ members = [
     "schnorr_pok",
     "bbs_plus",
     "vb_accumulator",
-    "proof_system",
-    "coconut",
-    "saver",
-    "compressed_sigma",
-    "benches",
     "test_utils",
-    "delegatable_credentials",
     "secret_sharing_and_dkg",
-    "legogroth16",
     "oblivious_transfer",
     "kvac",
     "merlin",
     "bulletproofs_plus_plus",
-    "smc_range_proof",
     "short_group_sig",
-    "syra",
-    "verifiable_encryption",
     "equality_across_groups"
 ]
 resolver = "2"
