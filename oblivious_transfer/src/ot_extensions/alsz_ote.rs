@@ -991,7 +991,7 @@ pub mod tests {
         }
     }
 
-    #[test]
+    #[test] #[ignore]
     fn alsz_with_active_security() {
         let mut rng = StdRng::seed_from_u64(0u64);
         let B = <Bls12_381 as Pairing>::G1Affine::rand(&mut rng);

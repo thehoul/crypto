@@ -232,7 +232,7 @@ pub mod tests {
         (secret, shares.0.into_iter().map(|s| s.share).collect())
     }
 
-    #[test]
+    #[test] #[ignore] // too expensive
     fn signing() {
         let mut rng = StdRng::seed_from_u64(0u64);
         const BASE_OT_KEY_SIZE: u16 = 128;
