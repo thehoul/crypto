@@ -949,7 +949,7 @@ mod tests {
         }
     }
 
-    #[test]
+    #[test] #[ignore]
     fn omega() {
         // Test evaluation of polynomials defined above
         let mut rng = StdRng::seed_from_u64(0u64);

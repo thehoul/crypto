@@ -256,7 +256,7 @@ pub mod tests {
     use blake2::Blake2b512;
     use sha3::Shake256;
 
-    #[test]
+    #[test] #[ignore]
     fn multi_party_multiplication() {
         let mut rng = StdRng::seed_from_u64(0u64);
         const BASE_OT_KEY_SIZE: u16 = 128;

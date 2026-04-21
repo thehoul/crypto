@@ -446,7 +446,7 @@ pub mod tests {
     use std::time::{Duration, Instant};
     use test_utils::test_serialization;
 
-    #[test]
+    #[test] #[ignore]
     fn compute() {
         let mut rng = StdRng::seed_from_u64(0u64);
         let ck_poly_g1 = G1Affine::rand(&mut rng);

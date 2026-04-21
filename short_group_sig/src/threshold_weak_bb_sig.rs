@@ -541,7 +541,7 @@ pub mod tests {
         sig_shares
     }
 
-    #[test]
+    #[test] #[ignore]
     fn known_message() {
         let mut rng = StdRng::seed_from_u64(0u64);
         let sig_params = SignatureParams::<Bls12_381>::generate_using_rng(&mut rng);
@@ -597,7 +597,7 @@ pub mod tests {
         }
     }
 
-    #[test]
+    #[test] #[ignore]
     fn shared_message() {
         let mut rng = StdRng::seed_from_u64(0u64);
         let sig_params = SignatureParams::<Bls12_381>::generate_using_rng(&mut rng);

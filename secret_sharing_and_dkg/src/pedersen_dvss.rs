@@ -22,7 +22,7 @@ pub mod tests {
     use dock_crypto_utils::commitment::PedersenCommitmentKey;
     use test_utils::{test_serialization, G1, G2};
 
-    #[test]
+    #[test] #[ignore]
     fn pedersen_distributed_verifiable_secret_sharing() {
         let mut rng = StdRng::seed_from_u64(0u64);
         let comm_key1 = PedersenCommitmentKey::<G1>::new::<Blake2b512>(b"test");

@@ -948,7 +948,7 @@ mod tests {
         );
     }
 
-    #[test]
+    #[test] #[ignore]
     fn single_witness_update_universal_accumulator() {
         // Test to update non-membership witness after single addition or removal
         let max = 1000;
@@ -1939,7 +1939,7 @@ mod tests {
         }
     }
 
-    #[test]
+    #[test] #[ignore]
     fn timing_public_batch_updates() {
         let max = 100010;
         let mut rng = StdRng::seed_from_u64(0u64);

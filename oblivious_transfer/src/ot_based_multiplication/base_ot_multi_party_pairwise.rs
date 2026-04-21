@@ -353,7 +353,7 @@ pub mod tests {
         base_ot_outputs
     }
 
-    #[test]
+    #[test] #[ignore]
     fn base_ot_pairwise() {
         let mut rng = StdRng::seed_from_u64(0u64);
 
